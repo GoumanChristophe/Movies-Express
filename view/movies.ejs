@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../public/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div class="central">
+    <%- include('./partials/header') %>
+   
+    <h1> <%= title %> </h1>
+    <div class="french-movies">
+       <% for(movie of movies) {%>  
+            <div> <%= movie.title %> (<%= movie.year %>) </div>
+        <% }%>
+    </div>
+    <br>
+
+    <div>
+        <form action="/movies" method="post">
+            <label for="movietitle">Titre du Film:</label>
+            <input type="text" name="movietitle" id="movietitle">
+            <label for="movieyear">Année du Film:</label>
+            <input type="text" name="movieyear" id="movieyear">
+            <button type="submit">Ajouter</button>
+        </form>
+    </div>
+</div> 
+
+    <%- include('./partials/footer') %>
+    <script>
+
+        axios.interceptors.request.use(function(config) {
+    const token = localStorage.getItem('token');
+    console.log("Token from localStorage:", token);  // Cela devrait afficher le token dans la console
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+}, function(error) {
+    return Promise.reject(error);
+});
+
+axios.get('http://localhost:3000/movies')
+    .then(response => console.log(response))
+    .catch(error => console.error(error));
+
+
+
+      
+        function addmovie(event) {
+            event.preventDefault();
+            const movietitle = document.getElementById('movietitle').value;
+            const movieyear = document.getElementById('movieyear').value;
+      
+            // Utiliser Axios pour envoyer les données du formulaire
+            axios.post('/movies', {
+                movietitle: movietitle,
+                movieyear: movieyear
+            })
+            .then(function (response) {
+                // Logique pour gérer la réponse
+                let newMovieDiv = document.createElement('div');
+                newMovieDiv.innerHTML = `${movietitle} (${movieyear})`;
+                document.querySelector('.french-movies').appendChild(newMovieDiv);
+                form.reset();
+            })
+            .catch(function(error) {
+                console.log('request failed', error);
+            });
+        }
+      
+        function checkStatus(response) {
+            if (response.status >= 200 && response.status < 300) {
+                let newMovieDiv = document.createElement('div');
+                const movietitle = document.getElementById('movietitle').value;
+                const movieyear = document.getElementById('movieyear').value;
+                newMovieDiv.innerHTML = `${movietitle} (${movieyear})`;
+                document.querySelector('.french-movies').appendChild(newMovieDiv);
+                form.reset();
+            }
+        }
+      </script>
+      
+</body>
+</html>

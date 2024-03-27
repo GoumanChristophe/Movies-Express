@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../public/style.css">
+</head>
+<body>
+<div class="central">
+    <%- include('./partials/header') %>
+   
+    <h1> Votre recherche sur <em> The movie Database</em> </h1>
+    <div>
+
+    <input type="text" name="term" id="term" placeholder="Titre de Film">
+    <button id="btnsearch">Chercher</button>
+
+</div>
+<div id="result">
+
+</div>
+
+
+    <%- include('./partials/footer') %>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        const API_KEY = "a1de1e753d2a1eacbfb935f9abc238f9";
+        const term = document.querySelector("#term");
+        const btnsearch = document.querySelector("#btnsearch");
+        btnsearch.addEventListener("click", search); 
+
+        let resultDiv = document.querySelector('#result');
+
+        function search () {
+        
+            const query = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${term.value}&language=fr-FR`; 
+            axios.get(query)
+                .then(function(response){
+                   // console.log(response);
+                    displayResults(response.data.results);
+                })
+                .catch(function(error) {
+            console.error("Erreur lors de l'appel API:", error);
+        });
+        }
+
+        function displayResults(results) {
+            console.log(results);
+            resultDiv.innerHTML=''; 
+            for(let result of results) {
+                let movieDiv = document.createElement('div');
+                movieDiv.innerHTML = result.title;
+                resultDiv.appendChild(movieDiv);
+            }
+            
+        }
+    </script>
+</body>
+</html>
